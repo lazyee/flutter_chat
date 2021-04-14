@@ -18,12 +18,20 @@ class _ChatPageState extends State<ChatPage> {
   ScrollController _scrollController;
   List<MsgModel> msgList = [];
   ContactModel user;
+  GlobalKey<ChatInputBarState> chatInputBarStateKey =
+      GlobalKey<ChatInputBarState>();
   @override
   void initState() {
     user = ContactModel();
     user.image = R.assetsImgMeinv1;
-
     _scrollController = ScrollController();
+    _scrollController.addListener(() {
+      if (isPanDown) {
+        chatInputBarStateKey.currentState.dismissKeyboard();
+        chatListScrollToEnd();
+        isPanDown = false;
+      }
+    });
 
     for (var i = 0; i < 10; i++) {
       var isSender = i % 2 == 0;
@@ -35,12 +43,21 @@ class _ChatPageState extends State<ChatPage> {
     chatListScrollToEnd();
   }
 
-  void chatListScrollToEnd({int delayMilliseconds = 0}) {
-    Future.delayed(Duration(milliseconds: delayMilliseconds), () {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+  void chatListScrollToEnd(
+      {Duration delayDuration = const Duration(seconds: 0),
+      bool animation = false,
+      Duration animDuration}) {
+    Future.delayed(delayDuration, () {
+      if (animation) {
+        _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+            duration: animDuration, curve: Curves.linear);
+      } else {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      }
     });
   }
 
+  bool isPanDown = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,20 +65,26 @@ class _ChatPageState extends State<ChatPage> {
       backgroundColor: Colors.white,
       body: Column(children: [
         Expanded(
-            child: ListView.builder(
-          controller: _scrollController,
-          itemBuilder: (context, index) => msgList[index].isSender
-              ? MsgSenderItem(msg: msgList[index])
-              : MsgReceiverItem(msg: msgList[index]),
-          itemCount: msgList.length,
-        )),
+            child: GestureDetector(
+                onPanDown: (details) => isPanDown = true,
+                child: ListView.builder(
+                  controller: _scrollController,
+                  itemBuilder: (context, index) => msgList[index].isSender
+                      ? MsgSenderItem(msg: msgList[index])
+                      : MsgReceiverItem(msg: msgList[index]),
+                  itemCount: msgList.length,
+                ))),
         ChatInputBar(
+          key: chatInputBarStateKey,
           onSubmitChatMsg: (text) {
             setState(() {
               msgList.add(MsgModel.text(text, user, true));
             });
             //必须延迟一下,否则无法滑动到底部
-            chatListScrollToEnd(delayMilliseconds: 50);
+            chatListScrollToEnd(
+                delayDuration: Duration(milliseconds: 50),
+                animation: true,
+                animDuration: Duration(milliseconds: 200));
           },
           onShowKeyboard: () {
             chatListScrollToEnd();

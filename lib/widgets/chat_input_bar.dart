@@ -20,23 +20,22 @@ class ChatInputBar extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ChatInputBarState createState() => _ChatInputBarState();
+  ChatInputBarState createState() => ChatInputBarState();
 }
 
-class _ChatInputBarState extends State<ChatInputBar>
+class ChatInputBarState extends State<ChatInputBar>
     with WidgetsBindingObserver {
   bool isKeyboardActived = false;
   TextEditingController _textEditController = TextEditingController();
+  FocusNode chatTextFieldFocusNode = FocusNode();
+
+  void dismissKeyboard() {
+    chatTextFieldFocusNode.unfocus();
+  }
 
   @override
   void initState() {
-    _textEditController.addListener(() {
-      // if (_textEditController.text.isEmpty) {
-      //   print("空");
-      // } else {
-      //   print("非空");
-      // }
-    });
+    _textEditController.addListener(() {});
 
     WidgetsBinding.instance.addObserver(this);
     super.initState();
@@ -53,15 +52,17 @@ class _ChatInputBarState extends State<ChatInputBar>
     super.didChangeMetrics();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // print("bottom:${MediaQuery.of(context).viewInsets.bottom}");
-      // print("addPostFrameCallback");
-      isKeyboardActived = !isKeyboardActived;
-      if (isKeyboardActived) {
-        if (widget.onShowKeyboard != null) {
-          widget.onShowKeyboard();
-        }
-      } else {
+      print("addPostFrameCallback:${chatTextFieldFocusNode.hasFocus}");
+      // isKeyboardActived = !isKeyboardActived;
+      if (isKeyboardActived && !chatTextFieldFocusNode.hasFocus) {
         if (widget.onDismissKeyboard != null) {
           widget.onDismissKeyboard();
+          isKeyboardActived = false;
+        }
+      } else {
+        if (widget.onShowKeyboard != null) {
+          widget.onShowKeyboard();
+          isKeyboardActived = true;
         }
       }
     });
@@ -101,6 +102,7 @@ class _ChatInputBarState extends State<ChatInputBar>
             padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
             child: TextField(
               controller: _textEditController,
+              focusNode: chatTextFieldFocusNode,
               style: TextStyle(),
               // onSubmitted: onSubmitted,
               onEditingComplete: () => onSubmitted(_textEditController.text),

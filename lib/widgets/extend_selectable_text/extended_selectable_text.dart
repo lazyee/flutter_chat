@@ -11,8 +11,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_chat/widgets/extend_selectable_text/extended_toolbar_options.dart';
 
-import 'cupertino/extended_text_selection.dart';
+import 'custom/extended_custom_text_selection_controls.dart';
 import 'extended_editable_text.dart';
 import 'extended_text_selection.dart';
 
@@ -105,15 +106,12 @@ class _ExtendedSelectableTextSelectionGestureDetectorBuilder
   void onSingleLongTapStart(LongPressStartDetails details) {
     print("extended_selectable_text:onSingleLongTapStart");
     if (delegate.selectionEnabled) {
+      //原本的代码--start
       // renderEditable.selectWord(cause: SelectionChangedCause.longPress);
-
-      // extendedCupertinoTextSelectionControls
-      //     .handleSelectAll(_state._editableText);
-      // _state._editableText.showToolbar();
-      // renderEditable.selectWord(cause: SelectionChangedCause.longPress);
-
       // Feedback.forLongPress(_state.context);
-      selectAll();
+      // 原本的代码--end
+      ///在长按事件开始的时候就选中全部,并且弹出toolbar
+      selectAllAndShowToolbar();
     }
   }
 
@@ -122,7 +120,8 @@ class _ExtendedSelectableTextSelectionGestureDetectorBuilder
     // super.onSingleLongTapEnd(details);
   }
 
-  void selectAll() {
+  ///选中全部并且弹出toolbar
+  void selectAllAndShowToolbar() {
     var textSelection = TextSelection(
       baseOffset: 0,
       extentOffset: _state.widget.data.length,
@@ -209,7 +208,8 @@ class ExtendedSelectableText extends StatefulWidget {
     this.textScaleFactor,
     this.showCursor = false,
     this.autofocus = false,
-    ExtendedToolbarOptions toolbarOptions,
+    this.toolbarOptions,
+    // ExtendedToolbarOptions toolbarOptions,
     this.minLines,
     this.maxLines,
     this.cursorWidth = 2.0,
@@ -236,11 +236,11 @@ class ExtendedSelectableText extends StatefulWidget {
           'A non-null String must be provided to a SelectableText widget.',
         ),
         textSpan = null,
-        toolbarOptions = toolbarOptions ??
-            const ExtendedToolbarOptions(
-              selectAll: true,
-              copy: true,
-            ),
+        // toolbarOptions =
+        // const ExtendedToolbarOptions(
+        //   selectAll: true,
+        //   copy: true,
+        // ),
         super(key: key);
 
   /// Creates a selectable text widget with a [TextSpan].
@@ -260,7 +260,8 @@ class ExtendedSelectableText extends StatefulWidget {
     this.textScaleFactor,
     this.showCursor = false,
     this.autofocus = false,
-    ExtendedToolbarOptions toolbarOptions,
+    this.toolbarOptions,
+    // ExtendedToolbarOptions toolbarOptions,
     this.minLines,
     this.maxLines,
     this.cursorWidth = 2.0,
@@ -287,11 +288,11 @@ class ExtendedSelectableText extends StatefulWidget {
           'A non-null TextSpan must be provided to a SelectableText.rich widget.',
         ),
         data = null,
-        toolbarOptions = toolbarOptions ??
-            const ExtendedToolbarOptions(
-              selectAll: true,
-              copy: true,
-            ),
+        // toolbarOptions = const [],
+        // const ExtendedToolbarOptions(
+        //   selectAll: true,
+        //   copy: true,
+        // ),
         super(key: key);
 
   /// The text to display.
@@ -384,7 +385,8 @@ class ExtendedSelectableText extends StatefulWidget {
   /// Paste and cut will be disabled regardless.
   ///
   /// If not set, select all and copy will be enabled by default.
-  final ExtendedToolbarOptions toolbarOptions;
+  // final ExtendedToolbarOptions toolbarOptions;
+  final List<ExtendedToolbarOption> toolbarOptions;
 
   /// {@macro flutter.widgets.editableText.selectionEnabled}
   bool get selectionEnabled => enableInteractiveSelection;
@@ -618,7 +620,7 @@ class _ExtendedSelectableTextState extends State<ExtendedSelectableText>
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:
         forcePressEnabled = true;
-        textSelectionControls = extendedCupertinoTextSelectionControls;
+        textSelectionControls = extendedCustomTextSelectionControls;
         paintCursorAboveText = true;
         cursorOpacityAnimates = true;
         if (theme.useTextSelectionTheme) {

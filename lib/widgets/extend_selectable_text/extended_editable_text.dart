@@ -18,6 +18,7 @@ import 'package:flutter/services.dart';
 
 import 'extended_text_selection_overlay.dart';
 import 'extended_text_selection.dart';
+import 'extended_toolbar_options.dart';
 
 export 'package:flutter/rendering.dart' show SelectionChangedCause;
 export 'package:flutter/services.dart'
@@ -263,44 +264,44 @@ class ExtendedTextEditingController extends ValueNotifier<TextEditingValue> {
 /// [EditableText] and its derived widgets have their own default [ToolbarOptions].
 /// Create a custom [ToolbarOptions] if you want explicit control over the toolbar
 /// option.
-class ExtendedToolbarOptions {
-  /// Create a toolbar configuration with given options.
-  ///
-  /// All options default to false if they are not explicitly set.
-  const ExtendedToolbarOptions({
-    this.copy = false,
-    this.cut = false,
-    this.paste = false,
-    this.selectAll = false,
-  })  : assert(copy != null),
-        assert(cut != null),
-        assert(paste != null),
-        assert(selectAll != null);
+// class ExtendedToolbarOptions {
+//   /// Create a toolbar configuration with given options.
+//   ///
+//   /// All options default to false if they are not explicitly set.
+//   const ExtendedToolbarOptions({
+//     this.copy = false,
+//     this.cut = false,
+//     this.paste = false,
+//     this.selectAll = false,
+//   })  : assert(copy != null),
+//         assert(cut != null),
+//         assert(paste != null),
+//         assert(selectAll != null);
 
-  /// Whether to show copy option in toolbar.
-  ///
-  /// Defaults to false. Must not be null.
-  final bool copy;
+//   /// Whether to show copy option in toolbar.
+//   ///
+//   /// Defaults to false. Must not be null.
+//   final bool copy;
 
-  /// Whether to show cut option in toolbar.
-  ///
-  /// If [EditableText.readOnly] is set to true, cut will be disabled regardless.
-  ///
-  /// Defaults to false. Must not be null.
-  final bool cut;
+//   /// Whether to show cut option in toolbar.
+//   ///
+//   /// If [EditableText.readOnly] is set to true, cut will be disabled regardless.
+//   ///
+//   /// Defaults to false. Must not be null.
+//   final bool cut;
 
-  /// Whether to show paste option in toolbar.
-  ///
-  /// If [EditableText.readOnly] is set to true, paste will be disabled regardless.
-  ///
-  /// Defaults to false. Must not be null.
-  final bool paste;
+//   /// Whether to show paste option in toolbar.
+//   ///
+//   /// If [EditableText.readOnly] is set to true, paste will be disabled regardless.
+//   ///
+//   /// Defaults to false. Must not be null.
+//   final bool paste;
 
-  /// Whether to show select all option in toolbar.
-  ///
-  /// Defaults to false. Must not be null.
-  final bool selectAll;
-}
+//   /// Whether to show select all option in toolbar.
+//   ///
+//   /// Defaults to false. Must not be null.
+//   final bool selectAll;
+// }
 
 /// A basic text input field.
 ///
@@ -436,12 +437,13 @@ class ExtendedEditableText extends StatefulWidget {
     this.scrollController,
     this.scrollPhysics,
     this.autocorrectionTextRectColor,
-    this.toolbarOptions = const ExtendedToolbarOptions(
-      copy: true,
-      cut: true,
-      paste: true,
-      selectAll: true,
-    ),
+    // this.toolbarOptions = const ExtendedToolbarOptions(
+    //   copy: true,
+    //   cut: true,
+    //   paste: true,
+    //   selectAll: true,
+    // ),
+    this.toolbarOptions = const [],
     this.autofillHints,
     this.clipBehavior = Clip.hardEdge,
     this.restorationId,
@@ -561,7 +563,8 @@ class ExtendedEditableText extends StatefulWidget {
   ///
   /// By default, all options are enabled. If [readOnly] is true,
   /// paste and cut will be disabled regardless.
-  final ExtendedToolbarOptions toolbarOptions;
+  // final ExtendedToolbarOptions toolbarOptions;
+  final List<ExtendedToolbarOption> toolbarOptions;
 
   /// Whether to show selection handles.
   ///
@@ -1534,16 +1537,20 @@ class ExtendedEditableTextState extends State<ExtendedEditableText>
       widget.cursorColor.withOpacity(_cursorBlinkOpacityController.value);
 
   @override
-  bool get cutEnabled => widget.toolbarOptions.cut && !widget.readOnly;
+  bool get cutEnabled => false;
+  // bool get cutEnabled => widget.toolbarOptions.cut && !widget.readOnly;
 
   @override
-  bool get copyEnabled => widget.toolbarOptions.copy;
+  bool get copyEnabled => true;
+  // bool get copyEnabled => widget.toolbarOptions.copy;
 
   @override
-  bool get pasteEnabled => widget.toolbarOptions.paste && !widget.readOnly;
+  bool get pasteEnabled => false;
+  // bool get pasteEnabled => widget.toolbarOptions.paste && !widget.readOnly;
 
   @override
-  bool get selectAllEnabled => widget.toolbarOptions.selectAll;
+  bool get selectAllEnabled => true;
+  // bool get selectAllEnabled => widget.toolbarOptions.selectAll;
 
   void _onChangedClipboardStatus() {
     setState(() {
@@ -2103,6 +2110,7 @@ class ExtendedEditableTextState extends State<ExtendedEditableText>
         clipboardStatus: _clipboardStatus,
         context: context,
         value: _value,
+        toolbarOptions: widget.toolbarOptions,
         debugRequiredFor: widget,
         toolbarLayerLink: _toolbarLayerLink,
         startHandleLayerLink: _startHandleLayerLink,

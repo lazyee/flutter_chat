@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_chat/widgets/extend_selectable_text/extended_toolbar_options.dart';
 
 import 'extended_editable_text.dart';
 import 'extended_text_selection_overlay.dart';
@@ -95,6 +96,8 @@ abstract class ExtendedTextSelectionControls {
     double textLineHeight,
     Offset position,
     List<TextSelectionPoint> endpoints,
+    //选项list
+    List<ExtendedToolbarOption> toolbarOptions,
     TextSelectionDelegate delegate,
     ExtendedClipboardStatusNotifier clipboardStatus,
   );

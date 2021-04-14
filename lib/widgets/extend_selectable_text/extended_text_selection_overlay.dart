@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_chat/widgets/extend_selectable_text/extended_toolbar_options.dart';
 import 'dart:math' as math;
 
 import 'extended_text_selection.dart';
@@ -23,6 +24,7 @@ class ExtendedTextSelectionOverlay {
     @required this.startHandleLayerLink,
     @required this.endHandleLayerLink,
     @required this.renderObject,
+    @required this.toolbarOptions,
     this.selectionControls,
     bool handlesVisible = false,
     this.selectionDelegate,
@@ -43,6 +45,8 @@ class ExtendedTextSelectionOverlay {
     _toolbarController =
         AnimationController(duration: fadeDuration, vsync: overlay);
   }
+
+  final List<ExtendedToolbarOption> toolbarOptions;
 
   /// The context in which the selection handles should appear.
   ///
@@ -327,6 +331,7 @@ class ExtendedTextSelectionOverlay {
           renderObject.preferredLineHeight,
           midpoint,
           endpoints,
+          toolbarOptions,
           selectionDelegate,
           clipboardStatus,
         ),

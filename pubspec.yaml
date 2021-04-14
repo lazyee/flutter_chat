@@ -48,8 +48,11 @@ flutter:
   assets:
   # assets-generator-begin
   # assets/img/*
+    - assets/img/ic_chat_add.png
+    - assets/img/ic_chat_emoji.png
     - assets/img/ic_chat_receiver.png
     - assets/img/ic_chat_sender.png
+    - assets/img/ic_chat_voice.png
     - assets/img/meinv_1.jpg
     - assets/img/meinv_2.jpg
     - assets/img/meinv_3.jpg

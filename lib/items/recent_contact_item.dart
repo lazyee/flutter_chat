@@ -15,8 +15,10 @@ class _RecentContactItemState extends State<RecentContactItem> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => ChatPage()));
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ChatPage(
+                  contact: widget.contact,
+                )));
       },
       child: Column(
         children: [

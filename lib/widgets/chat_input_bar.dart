@@ -33,6 +33,10 @@ class ChatInputBarState extends State<ChatInputBar>
     chatTextFieldFocusNode.unfocus();
   }
 
+  bool isShowKeyboard() {
+    return chatTextFieldFocusNode.hasFocus;
+  }
+
   @override
   void initState() {
     _textEditController.addListener(() {});

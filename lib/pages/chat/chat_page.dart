@@ -25,13 +25,7 @@ class _ChatPageState extends State<ChatPage> {
     user = ContactModel();
     user.image = R.assetsImgMeinv1;
     _scrollController = ScrollController();
-    _scrollController.addListener(() {
-      if (isPanDown) {
-        chatInputBarStateKey.currentState.dismissKeyboard();
-        chatListScrollToEnd();
-        isPanDown = false;
-      }
-    });
+    _scrollController.addListener(() {});
 
     for (var i = 0; i < 10; i++) {
       var isSender = i % 2 == 0;
@@ -57,7 +51,8 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  bool isPanDown = false;
+  ScrollPhysics scrollPhysics = BouncingScrollPhysics();
+  bool isScrollByUser = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,9 +61,27 @@ class _ChatPageState extends State<ChatPage> {
       body: Column(children: [
         Expanded(
             child: GestureDetector(
-                onPanDown: (details) => isPanDown = true,
+                onPanDown: (details) {
+                  if (chatInputBarStateKey.currentState.isShowKeyboard()) {
+                    isScrollByUser = true;
+                    setState(() {
+                      scrollPhysics = NeverScrollableScrollPhysics();
+                    });
+                  }
+                },
+                onPanUpdate: (details) {
+                  if (isScrollByUser) {
+                    chatInputBarStateKey.currentState.dismissKeyboard();
+                    chatListScrollToEnd();
+                    isScrollByUser = false;
+                    setState(() {
+                      scrollPhysics = BouncingScrollPhysics();
+                    });
+                  }
+                },
                 child: ListView.builder(
                   controller: _scrollController,
+                  physics: scrollPhysics,
                   itemBuilder: (context, index) => msgList[index].isSender
                       ? MsgSenderItem(msg: msgList[index])
                       : MsgReceiverItem(msg: msgList[index]),
